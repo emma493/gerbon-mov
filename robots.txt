@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 
-Sitemap: https://favmoney.site/sitemap.xml
+Sitemap: https://gerbonmovies.site/sitemap.xml

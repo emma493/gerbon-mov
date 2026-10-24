@@ -32,7 +32,7 @@ export function getMenuHTML() {
     installRow +
     "</nav>" +
     '<div class="sx-div"></div><nav>' +
-    '<a class="sidebar-link" href="https://araplhn.org/4/f4da12d7aaa67cd61f6a1196381da654" target="_blank" rel="noopener"><i class="fas fa-video"></i><span>Live Cams</span></a>' +
+    '<a class="sidebar-link" href="https://apiguinee.org/4/e84bb2f76bec39a649c3a6f14e4a8f9b" target="_blank" rel="noopener"><i class="fas fa-video"></i><span>Live Cams</span></a>' +
     "</nav></aside>"
   );
 }

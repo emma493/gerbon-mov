@@ -30,7 +30,7 @@ const FIRESTORE_KEY = 'AIzaSyDcn9_XoHec87DSdfmvW4zPGUGyuK1vUqA';
 const META_URL =
   `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)` +
   `/documents/site_config/og_preview?key=${FIRESTORE_KEY}&mask.fieldPaths=imageUrl`;
-const FALLBACK_IMG = 'https://favmoney.site/logo.png';
+const FALLBACK_IMG = 'https://gerbonmovies.site/logo.png';
 
 function photoDocUrl(slug) {
   return (
@@ -122,7 +122,7 @@ function escapeHtml(s) {
 }
 
 function buildEpHtml(slug, imgUrl) {
-  const canonical = `https://favmoney.site/${slug}`;
+  const canonical = `https://gerbonmovies.site/${slug}`;
   const title = escapeHtml(EP_TITLE);
   const desc = escapeHtml(EP_DESC);
   const img = escapeHtml(imgUrl);

@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const deepPrefs = params.get("prefs");
     if (deepFeed === "live") {
       location.href =
-        "https://araplhn.org/4/f4da12d7aaa67cd61f6a1196381da654";
+        "https://apiguinee.org/4/e84bb2f76bec39a649c3a6f14e4a8f9b";
       return;
     }
     if (deepFeed === "foryou" || deepFeed === "trending" || deepFeed === "saved") {

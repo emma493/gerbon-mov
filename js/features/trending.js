@@ -240,7 +240,7 @@ export async function init(ctx) {
       else if (go === "trending") safePaint();
       else if (go === "live") {
         location.href =
-          "https://araplhn.org/4/f4da12d7aaa67cd61f6a1196381da654";
+          "https://apiguinee.org/4/e84bb2f76bec39a649c3a6f14e4a8f9b";
       }
     }),
   );
