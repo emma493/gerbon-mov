@@ -1,0 +1,7 @@
+# Cloudflare Pages configuration for Gerbon Movies
+# Static site — no build step, deploys the root directory as-is.
+name = "gerbon-mov"
+pages_build_output_dir = "."
+
+[observability]
+enabled = true
