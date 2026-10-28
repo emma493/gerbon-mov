@@ -171,41 +171,62 @@
   align-items: center;
   gap: 6px;
   flex: none;
-  padding: 3px 10px 3px 8px;
+  padding: 4px 12px 4px 10px;
   border-radius: 9999px;
-  border: 1px solid rgba(255, 77, 109, 0.8);
-  background: #FF2B55;
+  border: 1px solid rgba(255, 77, 109, 0.9);
+  background: linear-gradient(135deg, #FF2B55 0%, #d60045 100%);
   box-shadow:
-    0 0 14px rgba(255, 43, 85, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    0 0 16px rgba(255, 43, 85, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
   color: #ffffff;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 900;
   line-height: 1;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
   white-space: nowrap;
   cursor: pointer;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-  transition: box-shadow 0.2s ease, background 0.2s ease, transform 0.1s ease;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  transition: box-shadow 0.2s ease, background 0.2s ease, transform 0.1s ease, filter 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+/* Shimmer sweep across the button on hover for extra CTR pop. */
+.sx-see-more::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  transition: transform 0.6s ease;
+  pointer-events: none;
+}
+.sx-see-more:hover::before {
+  transform: translateX(100%);
 }
 .sx-see-more:hover {
-  background: #ff4569;
-  border-color: rgba(255, 109, 135, 0.9);
+  background: linear-gradient(135deg, #ff4569 0%, #ff2b55 100%);
+  border-color: rgba(255, 109, 135, 0.95);
   box-shadow:
-    0 0 20px rgba(255, 43, 85, 0.75),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    0 0 24px rgba(255, 43, 85, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  filter: brightness(1.1);
 }
 .sx-see-more:active {
-  transform: scale(0.97);
+  transform: scale(0.95);
 }
 .sx-see-more:focus-visible {
   outline: 2px solid rgba(255, 107, 133, 0.9);
   outline-offset: 2px;
 }
 
-/* "LIVE" indicator dot inside the Join-my-Livestream button: white dot on
- * the pink fill with a soft white glow + pulse, so it reads as a real live
- * broadcast (CTR cue). Static white dot under prefers-reduced-motion. */
+/* "LIVE" indicator dot inside the livestream button: white dot on the pink
+ * fill with a soft white glow + pulse, so it reads as a real live broadcast
+ * (CTR cue). Static white dot under prefers-reduced-motion. */
 .sx-live-dot {
   flex: none;
   width: 7px;
@@ -214,7 +235,7 @@
   background: #ffffff;
   box-shadow:
     0 0 6px 1px rgba(255, 255, 255, 0.8),
-    0 0 12px 3px rgba(255, 255, 255, 0.35);
+    0 0 14px 3px rgba(255, 255, 255, 0.4);
   animation: sx-live-pulse 1.6s ease-in-out infinite;
 }
 @keyframes sx-live-pulse {
@@ -223,14 +244,80 @@
     opacity: 1;
   }
   50% {
-    transform: scale(1.35);
-    opacity: 0.75;
+    transform: scale(1.4);
+    opacity: 0.7;
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .sx-live-dot {
     animation: none;
   }
+}
+
+/* Red LIVE badge pill next to the dot. */
+.sx-live-badge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  animation: sx-live-badge-shimmer 2.4s ease-in-out infinite;
+}
+@keyframes sx-live-badge-shimmer {
+  0%, 100% {
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+  50% {
+    border-color: rgba(255, 255, 255, 0.7);
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.4);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sx-live-badge {
+    animation: none;
+  }
+}
+
+/* Play icon triangle inside the button. */
+.sx-live-icon {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+/* Label text beside the badge/icon. */
+.sx-live-text {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+
+/* Rail mute + install buttons below Share (previous-version FA icons). */
+.sx-rail-mute-icon,
+.sx-rail-install-icon {
+  font-size: 27px;
+  color: #fff;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  transition: opacity 0.15s ease;
+}
+#sx-rail-mute:focus-visible,
+#sx-rail-install:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 /* Rail mute + install buttons below Share (previous-version FA icons). */
