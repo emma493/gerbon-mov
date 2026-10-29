@@ -8,6 +8,8 @@
  * Set SMARTLINK_URL below to your Adsterra Smartlink before deploying.
  */
 
+import { store } from "../store.js";
+
 const SMARTLINK_URL = "https://your-adsterra-smartlink.com/go"; // <-- REPLACE THIS
 
 const ADBREAK_COUNT_KEY = "shortxx_adbreak_count";
@@ -115,7 +117,7 @@ function onVideoChanged() {
   if (isActive) return;
   const video = document.getElementById("main-video");
   const data = video && video.dataset ? null : null;
-  const currentId = (window.store && store.videoId) || null;
+  const currentId = store.videoId || null;
   if (!currentId) return;
   const lastId = getLastVideoId();
   if (currentId === lastId) return; // same video, don't double-count
