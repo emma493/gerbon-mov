@@ -34,6 +34,34 @@
             background: #111;
         }
 
+        /* --- Desktop Layout Logic --- */
+        @media (min-width: 1024px) {
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #000;
+            }
+
+            .video-container {
+                height: 100vh;
+                aspect-ratio: 9 / 16;
+                width: auto;
+                position: relative;
+                overflow: hidden !important;
+                background: #111;
+            }
+
+            .top-nav {
+                width: 100% !important;
+                left: 0 !important;
+                transform: none !important;
+                padding: 0 20px;
+                top: 25px;
+            }
+        }
+
+        /* --- Iframe & Safety Layers --- */
         .smartlink-iframe {
             position: absolute;
             top: 0;
@@ -56,6 +84,7 @@
             pointer-events: auto;
         }
 
+        /* --- Bottom Layout Arrangement --- */
         .bottom-info {
             position: absolute;
             bottom: 80px;
@@ -76,6 +105,7 @@
             gap: 12px;
         }
 
+        /* --- Base Button UI (Unified) --- */
         .sponsored-btn,
         .skip-ad-btn {
             padding: 12px 24px;
@@ -97,6 +127,7 @@
             box-shadow: 0 4px 15px rgba(255, 43, 84, 0.3);
         }
 
+        /* --- Skip Ad Button: Green UI --- */
         .skip-ad-btn {
             background-color: #1b5e20;
             position: relative;
@@ -108,18 +139,29 @@
         }
 
         @keyframes breathingSize {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         @keyframes pullUpEntrance {
-            to { opacity: 1; transform: translateY(0); }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
+        /* Continuous Edge Ripple Effect (Green) */
         .skip-ad-btn::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             border-radius: 4px;
             border: 2px solid rgba(46, 204, 113, 0.6);
             animation: rippleOut 2s infinite;
@@ -127,21 +169,36 @@
         }
 
         @keyframes rippleOut {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.2, 1.3); opacity: 0; }
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1.2, 1.3);
+                opacity: 0;
+            }
         }
 
+        /* Green Decorative Bubbles */
         .bubble {
             position: absolute;
-            width: 6px; height: 6px;
+            width: 6px;
+            height: 6px;
             background: #2ecc71;
             border-radius: 50%;
             filter: blur(1px);
             box-shadow: 0 0 8px #2ecc71;
         }
 
-        .b-tl { top: -3px; left: -3px; }
-        .b-br { bottom: -3px; right: -3px; }
+        .b-tl {
+            top: -3px;
+            left: -3px;
+        }
+
+        .b-br {
+            bottom: -3px;
+            right: -3px;
+        }
 
         .live-icon {
             background: rgba(0, 0, 0, 0.5);
@@ -151,31 +208,10 @@
             color: #fff;
         }
 
-        @media (min-width: 1024px) {
-            body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background-color: #000;
-            }
-            .video-container {
-                height: 100vh;
-                aspect-ratio: 9 / 16;
-                width: auto;
-                position: relative;
-                overflow: hidden !important;
-                background: #111;
-            }
-            .top-nav {
-                width: 100% !important;
-                left: 0 !important;
-                transform: none !important;
-                padding: 0 20px;
-                top: 25px;
-            }
+        .logo {
+            width: 103px;
+            height: 26px;
         }
-
-        .logo { width: 103px; height: 26px; }
 
         .for-you {
             font-weight: 700;
