@@ -21,6 +21,7 @@ import { init as initSwipe } from "./features/swipe.js";
 
 const FEATURES = [
   "ads",
+  "adbreak",
   "creator",
   "guide",
   "prefs",
