@@ -9,7 +9,7 @@
 
 import { store } from "../store.js";
 
-const SMARTLINK_URL = "https://your-adsterra-smartlink.com/go"; // <-- REPLACE THIS
+const SMARTLINK_URL = "https://araplhn.org/4/f4da12d7aaa67cd61f6a1196381da654";
 
 const ADBREAK_COUNT_KEY = "shortxx_adbreak_count";
 const ADBREAK_THRESHOLD_KEY = "shortxx_adbreak_threshold";
