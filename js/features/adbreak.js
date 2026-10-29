@@ -1,9 +1,8 @@
 /* js/features/adbreak.js — Ad Break interstitial.
  *
- * After every 3–5 videos (randomized threshold), an overlay covers the page
- * leaving only the video player + a big red CTA button. Clicking the button
- * opens the Adsterra Smartlink in a new tab. When the user returns to the
- * tab, the overlay disappears and the normal UI returns.
+ * After every 3–5 videos (randomized threshold), redirects to ads.html
+ * which shows a full-screen red CTA button. Clicking the button opens the
+ * Adsterra Smartlink in a new tab and returns to index.html.
  *
  * Set SMARTLINK_URL below to your Adsterra Smartlink before deploying.
  */
@@ -15,10 +14,7 @@ const SMARTLINK_URL = "https://your-adsterra-smartlink.com/go"; // <-- REPLACE T
 const ADBREAK_COUNT_KEY = "shortxx_adbreak_count";
 const ADBREAK_THRESHOLD_KEY = "shortxx_adbreak_threshold";
 const ADBREAK_LAST_VIDEO_KEY = "shortxx_adbreak_last_video";
-
-let overlayEl = null;
-let isActive = false;
-let videoPausedBefore = false;
+const RETURN_FLAG_KEY = "shortxx_adbreak_return";
 
 function getCount() {
   try {
@@ -54,69 +50,12 @@ function setLastVideoId(id) {
   try { localStorage.setItem(ADBREAK_LAST_VIDEO_KEY, id); } catch (e) {}
 }
 
-function createOverlay() {
-  if (overlayEl) return overlayEl;
-  overlayEl = document.createElement("div");
-  overlayEl.className = "sx-adbreak-overlay";
-  overlayEl.innerHTML = `
-    <div class="sx-adbreak-content">
-      <div class="sx-adbreak-dot"></div>
-      <button id="sx-adbreak-btn" class="sx-adbreak-btn" type="button" aria-label="Continue">
-        <span class="sx-adbreak-icon">▶</span>
-        <span class="sx-adbreak-text">Watch Now</span>
-        <span class="sx-adbreak-sub">Tap to continue</span>
-      </button>
-      <div class="sx-adbreak-hint">Ad Break</div>
-    </div>
-  `;
-  document.body.appendChild(overlayEl);
-
-  const btn = overlayEl.querySelector("#sx-adbreak-btn");
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    openSmartlink();
-  });
-  return overlayEl;
-}
-
 function showAdBreak() {
-  if (isActive) return;
-  const video = document.getElementById("main-video");
-  if (video && !video.paused) {
-    videoPausedBefore = true;
-    video.pause().catch(() => {});
-  } else {
-    videoPausedBefore = false;
-  }
-  createOverlay();
-  overlayEl.style.display = "flex";
-  document.body.classList.add("sx-adbreak-active");
-  isActive = true;
-}
-
-function hideAdBreak() {
-  if (!isActive) return;
-  document.body.classList.remove("sx-adbreak-active");
-  if (overlayEl) overlayEl.style.display = "none";
-  isActive = false;
-  const video = document.getElementById("main-video");
-  if (video && videoPausedBefore) {
-    video.play().catch(() => {});
-  }
-  videoPausedBefore = false;
-}
-
-function openSmartlink() {
-  try { window.open(SMARTLINK_URL, "_blank"); } catch (e) {}
-  resetCount();
-  hideAdBreak();
+  // Redirect to the standalone ad break page.
+  window.location.href = "ads.html";
 }
 
 function onVideoChanged() {
-  if (isActive) return;
-  const video = document.getElementById("main-video");
-  const data = video && video.dataset ? null : null;
   const currentId = store.videoId || null;
   if (!currentId) return;
   const lastId = getLastVideoId();
@@ -130,23 +69,23 @@ function onVideoChanged() {
   }
 }
 
-function restoreUI() {
-  if (isActive) hideAdBreak();
-}
-
 export async function init(ctx) {
+  // If we just returned from ads.html, don't trigger another break immediately.
+  try {
+    const returning = sessionStorage.getItem(RETURN_FLAG_KEY);
+    if (returning) {
+      sessionStorage.removeItem(RETURN_FLAG_KEY);
+      resetCount();
+    }
+  } catch (e) {}
+
   // Listen for video changes to count watched videos.
   window.addEventListener("sx:video-changed", () => {
     try { onVideoChanged(); } catch (e) {}
   });
-  // Restore UI when user returns to the tab.
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) restoreUI();
-  });
-  window.addEventListener("focus", () => restoreUI());
 
   // Debug helpers.
-  window.sxAdbreakReset = () => { resetCount(); hideAdBreak(); };
+  window.sxAdbreakReset = () => { resetCount(); };
   window.sxAdbreakForce = () => showAdBreak();
-  window.sxAdbreakStatus = () => ({ count: getCount(), threshold: getThreshold(), active: isActive });
+  window.sxAdbreakStatus = () => ({ count: getCount(), threshold: getThreshold() });
 }
