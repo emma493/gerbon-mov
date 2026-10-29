@@ -1,28 +1,34 @@
 /* js/features/adbreak.js — Ad Break interstitial.
  *
- * After every 3–5 videos (randomized threshold), redirects to ads.html
- * which shows a full-screen red CTA button. Clicking the button opens the
+ * After every 3–5 video scrolls (randomized threshold), redirects to ads.html
+ * which shows a full-screen ad page. Clicking the WATCH AD button opens the
  * Adsterra Smartlink in a new tab and returns to index.html.
  *
- * Set SMARTLINK_URL below to your Adsterra Smartlink before deploying.
+ * Mirrors the scroll-count pattern from the reference script.js:
+ *   - sessionStorage.scrollCount   -> increments on every video change
+ *   - sessionStorage.targetScrolls -> random 3-5 threshold
+ * When scrollCount >= targetScrolls, redirect to ads.html.
+ *
+ * SMARTLINK_URL is the Live Cams / Adsterra Smartlink.
  */
-
-import { store } from "../store.js";
 
 const SMARTLINK_URL = "https://araplhn.org/4/f4da12d7aaa67cd61f6a1196381da654";
 
-const ADBREAK_COUNT_KEY = "shortxx_adbreak_count";
-const ADBREAK_THRESHOLD_KEY = "shortxx_adbreak_threshold";
-const ADBREAK_LAST_VIDEO_KEY = "shortxx_adbreak_last_video";
+const SCROLL_COUNT_KEY = "scrollCount";
+const TARGET_SCROLLS_KEY = "targetScrolls";
 const RETURN_FLAG_KEY = "shortxx_adbreak_return";
+
+function getRandomAdScrollTarget() {
+  return Math.floor(Math.random() * 3) + 3; // 3, 4, or 5
+}
 
 function getCount() {
   try {
-    return parseInt(localStorage.getItem(ADBREAK_COUNT_KEY) || "0", 10) || 0;
+    return parseInt(sessionStorage.getItem(SCROLL_COUNT_KEY) || "0", 10) || 0;
   } catch (e) { return 0; }
 }
 function setCount(n) {
-  try { localStorage.setItem(ADBREAK_COUNT_KEY, String(n)); } catch (e) {}
+  try { sessionStorage.setItem(SCROLL_COUNT_KEY, String(n)); } catch (e) {}
 }
 function incrementCount() {
   const c = getCount() + 1;
@@ -33,21 +39,14 @@ function resetCount() {
   setCount(0);
 }
 
-function getThreshold() {
+function getTarget() {
   try {
-    const t = localStorage.getItem(ADBREAK_THRESHOLD_KEY);
+    const t = sessionStorage.getItem(TARGET_SCROLLS_KEY);
     if (t) return parseInt(t, 10);
   } catch (e) {}
-  const threshold = Math.floor(Math.random() * 3) + 3; // 3, 4, or 5
-  try { localStorage.setItem(ADBREAK_THRESHOLD_KEY, String(threshold)); } catch (e) {}
-  return threshold;
-}
-
-function getLastVideoId() {
-  try { return localStorage.getItem(ADBREAK_LAST_VIDEO_KEY) || null; } catch (e) { return null; }
-}
-function setLastVideoId(id) {
-  try { localStorage.setItem(ADBREAK_LAST_VIDEO_KEY, id); } catch (e) {}
+  const target = getRandomAdScrollTarget();
+  try { sessionStorage.setItem(TARGET_SCROLLS_KEY, String(target)); } catch (e) {}
+  return target;
 }
 
 function showAdBreak() {
@@ -55,18 +54,18 @@ function showAdBreak() {
   window.location.href = "ads.html";
 }
 
-function onVideoChanged() {
-  const currentId = store.videoId || null;
-  if (!currentId) return;
-  const lastId = getLastVideoId();
-  if (currentId === lastId) return; // same video, don't double-count
-  setLastVideoId(currentId);
+function checkAndTriggerAd() {
   const count = incrementCount();
-  if (count >= getThreshold()) {
+  const target = getTarget();
+
+  if (count >= target) {
+    // Reset counter and pick a new random threshold (3-5) for next cycle.
     resetCount();
-    try { localStorage.removeItem(ADBREAK_THRESHOLD_KEY); } catch (e) {}
+    try { sessionStorage.setItem(TARGET_SCROLLS_KEY, String(getRandomAdScrollTarget())); } catch (e) {}
     showAdBreak();
+    return true;
   }
+  return false;
 }
 
 export async function init(ctx) {
@@ -76,16 +75,18 @@ export async function init(ctx) {
     if (returning) {
       sessionStorage.removeItem(RETURN_FLAG_KEY);
       resetCount();
+      // Also set a fresh random target so the next cycle starts clean.
+      try { sessionStorage.setItem(TARGET_SCROLLS_KEY, String(getRandomAdScrollTarget())); } catch (e) {}
     }
   } catch (e) {}
 
-  // Listen for video changes to count watched videos.
+  // Listen for video changes (every swipe/next) to count scrolls.
   window.addEventListener("sx:video-changed", () => {
-    try { onVideoChanged(); } catch (e) {}
+    try { checkAndTriggerAd(); } catch (e) {}
   });
 
   // Debug helpers.
   window.sxAdbreakReset = () => { resetCount(); };
   window.sxAdbreakForce = () => showAdBreak();
-  window.sxAdbreakStatus = () => ({ count: getCount(), threshold: getThreshold() });
+  window.sxAdbreakStatus = () => ({ count: getCount(), target: getTarget() });
 }
