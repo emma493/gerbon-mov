@@ -1,7 +1,7 @@
 /* Gerbon Movies service worker — app-shell caching only.
  * Video streams (HLS/mp4), Firestore traffic, analytics and ad networks
  * always go straight to the network so playback and data stay fresh. */
-const CACHE = "gerbon-movies-v18";
+const CACHE = "gerbon-movies-v19";
 const SHELL = [
   "/",
   "/index.html",
