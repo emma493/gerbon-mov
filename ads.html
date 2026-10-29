@@ -213,13 +213,12 @@
         <div class="ad-overlay" id="adOverlay">
             <div class="ad-text-top">AD BREAK</div>
             <div class="ad-text-mid">Tap to continue watching</div>
-            <a href="https://araplhn.org/4/f4da12d7aaa67cd61f6a1196381da654"
-               target="_blank" rel="noopener noreferrer" class="btn-subscribe">
+            <button id="watchAdBtn" type="button" class="btn-subscribe">
                 <svg class="live-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
                 </svg>
                 WATCH AD
-            </a>
+            </button>
         </div>
 
     </div>
@@ -348,6 +347,19 @@
         window.addEventListener('touchstart', (e) => {}, { passive: true });
         window.addEventListener('touchend', (e) => {}, { passive: true });
         window.addEventListener('wheel', (e) => {}, { passive: true });
+
+        // Watch Ad button: open smartlink in new tab + redirect current tab instantly
+        const watchBtn = document.getElementById('watchAdBtn');
+        watchBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            // Mark return so index.html won't redirect back to ads.html
+            sessionStorage.setItem("shortxx_adbreak_return", "1");
+            // Open smartlink in new tab
+            try { window.open("https://araplhn.org/4/f4da12d7aaa67cd61f6a1196381da654", "_blank"); } catch (e) {}
+            // Instantly redirect current tab back to index.html
+            window.location.href = "index.html";
+        });
 
         // Enforce Playback logic
         const enforceVideoPlayback = () => {
