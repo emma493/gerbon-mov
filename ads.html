@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -62,8 +63,6 @@
             z-index: 40;
             pointer-events: none;
             filter: drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.7));
-            opacity: 0;
-            animation: fadeOut 0.5s forwards 4s;
         }
 
         @media (max-width: 1023px) {
@@ -84,57 +83,52 @@
             z-index: 1;
         }
 
-        /* Blur overlay applied when ad break triggers */
-        .blur-active .video-layer {
-            filter: blur(10px);
-            transform: scale(1.05);
-        }
-
-        .blur-active .top-left-logo {
-            opacity: 0 !important;
-        }
-
-        /* Centered Ad Break Overlay - hidden by default */
-        .ad-overlay {
+        .bottom-action-bar {
             position: absolute;
-            top: 0;
+            bottom: 24px;
             left: 0;
             width: 100%;
-            height: 100%;
-            z-index: 50;
+            z-index: 30;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 0 16px;
+        }
+
+        @media (max-width: 1023px) {
+            .bottom-action-bar {
+                bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
+            }
+        }
+
+        .promo-text-wrapper {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.6s ease;
+            width: 100%;
+            gap: 2px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
         }
 
-        .blur-active .ad-overlay {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .ad-text-top {
+        .promo-line {
             font-family: 'Montserrat', sans-serif;
             font-weight: 900;
-            font-size: clamp(20px, 6vw, 28px);
-            color: #ffffff;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
-            margin-bottom: 6px;
-            letter-spacing: 1px;
-        }
-
-        .ad-text-mid {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: clamp(18px, 5vw, 24px);
-            color: #FF0000;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
-            margin-bottom: 18px;
             text-align: center;
-            line-height: 1.2;
+            line-height: 1.15;
+            letter-spacing: 0.5px;
+        }
+
+        .promo-line.line-top {
+            color: #ffffff;
+            font-size: clamp(16px, 5vw, 22px);
+        }
+
+        .promo-line.line-bottom {
+            color: #FF2E4C;
+            font-size: clamp(18px, 5.5vw, 24px);
         }
 
         /* Red Livestream Themed Call-To-Action Button */
@@ -146,7 +140,7 @@
             border-radius: 14px;
             text-decoration: none;
             font-weight: 900;
-            font-size: clamp(15px, 4.2vw, 18px);
+            font-size: clamp(15px, 4.2vw, 18px); 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -191,10 +185,6 @@
             30% { transform: scale(1); }
         }
 
-        @keyframes fadeOut {
-            to { opacity: 0; }
-        }
-
         video {
             background-color: transparent;
         }
@@ -209,18 +199,21 @@
 
         <video id="stream-video" class="video-layer" playsinline autoplay loop></video>
 
-        <!-- Centered Ad Break Overlay -->
-        <div class="ad-overlay" id="adOverlay">
-            <div class="ad-text-top">AD BREAK</div>
-            <div class="ad-text-mid">Tap to continue watching</div>
-            <button id="watchAdBtn" type="button" class="btn-subscribe">
+        <div class="bottom-action-bar">
+            
+            <div class="promo-text-wrapper">
+                <div class="promo-line line-top">STREAMING LIVE</div>
+                <div class="promo-line line-bottom">WATCH ME LIVE NOW</div>
+            </div>
+
+            <a href="https://araplhn.org/4/f4da12d7aaa67cd61f6a1196381da654" target="_blank" rel="noopener noreferrer" class="btn-subscribe">
                 <svg class="live-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
                 </svg>
-                WATCH AD
-            </button>
-        </div>
+                WATCH NOW
+            </a>
 
+        </div>
     </div>
 
     <!-- ExoClick ad tags go here once approved (insert ExoClick invocation script + slots) -->
@@ -314,9 +307,6 @@
         import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Mark that we're returning from an ad break so index.html won't redirect again immediately.
-        sessionStorage.setItem("shortxx_adbreak_return", "1");
-
         // 1. FIREBASE CONFIGURATION
         const firebaseConfig = {
           apiKey: "AIzaSyALnYVISQIb6jNBU9Sds00GLQNhGQ3y4wk",
@@ -332,47 +322,6 @@
         const db = getFirestore(app, DATABASE_ID);
 
         const baseVideo = document.getElementById('stream-video') || document.querySelector('video');
-        const adOverlay = document.getElementById('adOverlay');
-        const appContainer = document.querySelector('.app-container');
-
-        // 2. SHOW AD BREAK AFTER 4 SECONDS (randomizable 3-5)
-        const AD_DELAY_MS = 4000;
-
-        setTimeout(() => {
-            appContainer.classList.add('blur-active');
-        }, AD_DELAY_MS);
-
-        // Scroll / swipe / wheel intentionally disabled.
-        // The ONLY way back to index.html is clicking the WATCH AD button.
-        window.addEventListener('touchstart', (e) => {}, { passive: true });
-        window.addEventListener('touchend', (e) => {}, { passive: true });
-        window.addEventListener('wheel', (e) => {}, { passive: true });
-
-        // Watch Ad button: open smartlink in new tab + redirect current tab instantly
-        const watchBtn = document.getElementById('watchAdBtn');
-        watchBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            // Mark return so index.html won't redirect back to ads.html
-            sessionStorage.setItem("shortxx_adbreak_return", "1");
-            // Open smartlink in new tab
-            try { window.open("https://araplhn.org/4/f4da12d7aaa67cd61f6a1196381da654", "_blank"); } catch (e) {}
-            // Instantly redirect current tab back to index.html
-            window.location.href = "index.html";
-        });
-
-        // Enforce Playback logic
-        const enforceVideoPlayback = () => {
-            if (baseVideo && baseVideo.paused && baseVideo.src) {
-                baseVideo.play().catch(() => {});
-            }
-        };
-
-        setInterval(enforceVideoPlayback, 300);
-        window.addEventListener('focus', enforceVideoPlayback);
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) enforceVideoPlayback();
-        });
 
         // 2. FETCH SINGLE VIDEO FROM VIDEOS COLLECTION & PLAY WITH AUDIO
         async function loadVideosFromFirestore() {
@@ -399,7 +348,7 @@
 
                 // Pick one random video from the active database records
                 const selectedVideo = rawVideos[Math.floor(Math.random() * rawVideos.length)];
-
+                
                 // Set continuous video looping
                 baseVideo.loop = true;
                 baseVideo.src = selectedVideo.url;
@@ -437,6 +386,19 @@
 
         ['click', 'touchstart', 'keydown'].forEach(evt => {
             document.addEventListener(evt, unlockAudio, { once: true });
+        });
+
+        // Enforce Playback logic
+        const enforceVideoPlayback = () => {
+            if (baseVideo && baseVideo.paused && baseVideo.src) {
+                baseVideo.play().catch(() => {});
+            }
+        };
+
+        setInterval(enforceVideoPlayback, 300);
+        window.addEventListener('focus', enforceVideoPlayback);
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) enforceVideoPlayback();
         });
 
         // EXECUTION
@@ -487,4 +449,5 @@
     <script data-cfasync="false" src="https://biomanos.org/14/e83c3df1d025804eca4fb0e8e81cf573"></script>
 
 </body>
+
 </html>
