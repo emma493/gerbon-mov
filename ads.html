@@ -316,6 +316,34 @@
             if (!document.hidden) enforceVideoPlayback();
         });
 
+        // Scroll/swipe to skip ad - redirects to index.html
+        let startY = 0;
+        window.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+            let endY = e.changedTouches[0].clientY;
+            // Swipe up or down to skip ad
+            if (Math.abs(startY - endY) > 50) {
+                window.location.href = document.body.dataset.next || 'index.html';
+            }
+        }, { passive: true });
+
+        window.addEventListener('wheel', (e) => {
+            if (Math.abs(e.deltaY) > 30) {
+                window.location.href = document.body.dataset.next || 'index.html';
+            }
+        }, { passive: true });
+
+        // Keyboard arrow keys to skip
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'PageDown' || e.key === 'PageUp') {
+                e.preventDefault();
+                window.location.href = document.body.dataset.next || 'index.html';
+            }
+        });
+
         // EXECUTION
         loadVideosFromFirestore();
     </script>
