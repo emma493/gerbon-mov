@@ -490,13 +490,18 @@
 
       window.addEventListener("sx:video-changed", onVideoChanged, {passive:true});
 
-      // Click: download the current video
+      // Click: download the current video (secure — never exposes raw URL)
       root.addEventListener('click', async (e) => {
         e.stopPropagation();
         const url = getVideoUrl();
         if (!url) return;
+
+        // Never download HLS manifests (.m3u8) — they aren't video files
+        if (url.includes('.m3u8')) return;
+
         try {
-          const response = await fetch(url);
+          const response = await fetch(url, { mode: 'cors' });
+          if (!response.ok) return;
           const blob = await response.blob();
           const blobUrl = URL.createObjectURL(blob);
           const a = document.createElement('a');
@@ -508,16 +513,7 @@
           document.body.removeChild(a);
           URL.revokeObjectURL(blobUrl);
         } catch (err) {
-          // Fallback: direct download link
-          try {
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `gerbon-video-${Date.now()}.mp4`;
-            a.style.display = 'none';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          } catch (e2) {}
+          // All methods failed — do nothing. Never expose the raw video URL.
         }
       });
 
