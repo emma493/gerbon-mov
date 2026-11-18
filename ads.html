@@ -129,6 +129,15 @@
   $('viewAd').addEventListener('click', function(e){
     e.preventDefault();
     grant();
+
+    // Reset the ad-break scroll counter so the user doesn't immediately
+    // hit the threshold again when they return from the ad.
+    try{
+      sessionStorage.setItem('scrollCount', '0');
+      sessionStorage.setItem('targetScrolls', String(Math.floor(Math.random() * 3) + 3));
+      sessionStorage.setItem('shortxx_adbreak_return', '1');
+    }catch(e){}
+
     location.replace(SHRINKME_URL);
   });
 })();
