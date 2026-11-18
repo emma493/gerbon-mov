@@ -92,7 +92,7 @@
 
     <!-- Gerbon 3D Download Element -->
     <style>
-:root{--s:64px;--u:1;--orange:#FF9A1F;--coral:#FF5A3C;--pink:#FF2B55;--magenta:#D4136F}
+:root{--s:40px;--u:1;--orange:#FF9A1F;--coral:#FF5A3C;--pink:#FF2B55;--magenta:#D4136F}
 .gm-dl{position:fixed;left:0;top:0;width:var(--s);display:flex;flex-direction:column;align-items:center;gap:7px;
   padding:0;border:0;background:none;appearance:none;cursor:pointer;-webkit-tap-highlight-color:transparent;
   transform:translate3d(var(--x,0px),var(--y,0px),0);transition:transform .85s cubic-bezier(.22,1,.36,1);
@@ -520,19 +520,31 @@
         try { localStorage.setItem("shortxx_pwa_installed", "1"); } catch (err) {}
       });
 
-      // Random positioning beside the right rail
-      const S = 64, GAP = 14, BAND = 90;
+      // Random positioning beside the right rail — bottom right zone
+      const S = 40, GAP = 10, BAND = 70;
       let last = { x: 0, y: 0 }, pressed = false;
       let timer = null;
 
       function pick(){
         const rail = document.getElementById("sx-rail-install");
-        if(!rail) return null;
-        const r = rail.getBoundingClientRect();
-        const xMax = Math.max(8, r.left - GAP - S);
-        const xMin = Math.max(8, xMax - BAND);
-        const yMin = Math.max(0, r.top);
-        const yMax = Math.min(r.bottom - S - 24, innerHeight - S - 90);
+        let r = null;
+        if(rail) r = rail.getBoundingClientRect();
+
+        // Bottom-right zone: clamp Y to the lower 45% of the viewport
+        const yMin = Math.max(0, innerHeight * 0.55 - S);
+        const yMax = Math.min(innerHeight - S - 10, innerHeight - 10);
+        let xMin, xMax;
+
+        if(rail){
+          // Place to the left of the rail icon, near the right edge
+          xMax = Math.max(8, r.left - GAP - S);
+          xMin = Math.max(8, xMax - BAND);
+        } else {
+          // Fallback: bottom-right corner of the screen
+          xMax = innerWidth - S - 10;
+          xMin = Math.max(8, xMax - BAND);
+        }
+
         if(xMax < xMin || yMax < yMin) return null;
         for(let i = 0; i < 8; i++){
           const x = xMin + Math.random() * (xMax - xMin);
