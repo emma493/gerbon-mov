@@ -1,397 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="kadam-verification" content="kadam902a97af9df4350a61a5684f57a560cf" />
-    <title>Gerbon Movies - Ad Break</title>
-    <link rel="shortcut icon" href="icon.png" type="image/x-icon">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800;900&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="color-scheme" content="dark">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unlock more content</title>
+<meta name="theme-color" content="#FF2B55">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --scrim:#0a0a0f;
+    --card:#ffffff;
+    --title:#1f1f1f;
+    --text:#5f6368;
+    --border:#dadce0;
+    --accent:#FF2B55;
+    --option-bg:#ffffff;
+    --option-hover:#f6f9fe;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:"Plus Jakarta Sans","Poppins",system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+    background:
+      radial-gradient(60% 45% at 85% 8%, rgba(255,43,85,.32) 0%, rgba(255,43,85,0) 70%),
+      radial-gradient(55% 40% at 10% 95%, rgba(255,43,85,.18) 0%, rgba(255,43,85,0) 70%),
+      linear-gradient(180deg,#14141c 0%,#0a0a0f 55%,#050508 100%);
+    background-attachment:fixed;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+    padding-top:calc(20px + env(safe-area-inset-top,0px));
+    padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  }
+  .card{
+    width:100%;max-width:360px;
+    background:var(--card);
+    border-radius:16px;
+    padding:20px 18px 18px;
+    box-shadow:0 10px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.04);
+    animation:pop .25s ease-out;
+  }
+  @keyframes pop{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+  .option{box-shadow:0 1px 3px rgba(255,43,85,.12)}
+  .option:hover{border-color:var(--accent)}
+  .btn{box-shadow:0 4px 14px rgba(255,43,85,.35)}
+  .perks{display:flex;justify-content:center;gap:14px;margin-top:14px;font-size:11px;font-weight:600;color:var(--text)}
+  .perks b{color:var(--accent);font-weight:800}
+  h1{font-size:24px;font-weight:800;line-height:1.15;letter-spacing:-.6px;color:var(--title);text-align:center;margin-bottom:10px}
+  .title-group{text-align:center;margin-bottom:18px}
+  .title-line-1{font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(--title);margin-bottom:6px}
+  .title-line-2{font-size:13.5px;font-weight:500;line-height:1.5;color:var(--text)}
+  .highlight{font-weight:800;color:var(--accent)}
+  .option{
+    width:100%;
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--option-bg);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+    cursor:pointer;text-align:left;font:inherit;text-decoration:none;color:inherit;
+    transition:background .15s;
+  }
+  .option:hover,.option:focus-visible{background:var(--option-hover);outline:none}
+  .option .t{font-size:16px;font-weight:800;letter-spacing:-.2px;color:var(--title)}
+  .option .d{font-size:12.5px;font-weight:600;color:var(--text);margin-top:3px}
+  .play{
+    flex:none;width:22px;height:22px;border-radius:50%;
+    background:var(--accent);display:grid;place-items:center;
+  }
+  .play svg{width:10px;height:10px;fill:#fff;margin-left:1px}
+  .back{display:block;text-align:center;margin-top:16px;font-size:13px;font-weight:700;color:var(--accent);text-decoration:none}
 
-        body, html {
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            overflow: auto;
-            color: #fff;
-        }
-
-        @media (min-width: 1024px) {
-            body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background: #000;
-            }
-            .app-container {
-                height: 100vh;
-                aspect-ratio: 9 / 16;
-                position: relative;
-                overflow: auto;
-                background-color: #000;
-            }
-        }
-
-        @media (max-width: 1023px) {
-            .app-container {
-                width: 100vw;
-                height: 100vh;
-                height: 100dvh;
-                position: relative;
-                overflow: auto;
-                background-color: #000;
-            }
-        }
-
-        /* Top Left Floating Logo Styling */
-        .top-left-logo {
-            position: absolute;
-            top: 16px;
-            left: 16px;
-            width: 140px;
-            height: auto;
-            z-index: 40;
-            pointer-events: none;
-            filter: drop-shadow(0px 2px 6px rgba(0, 0, 0, 0.7));
-        }
-
-        @media (max-width: 1023px) {
-            .top-left-logo {
-                top: calc(16px + env(safe-area-inset-top, 0px));
-                left: calc(16px + env(safe-area-inset-left, 0px));
-                width: 120px;
-            }
-        }
-
-        .video-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: 1;
-        }
-
-        .bottom-action-bar {
-            position: absolute;
-            bottom: 24px;
-            left: 0;
-            width: 100%;
-            z-index: 30;
-            pointer-events: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            padding: 0 16px;
-        }
-
-        @media (max-width: 1023px) {
-            .bottom-action-bar {
-                bottom: calc(24px + env(safe-area-inset-bottom, 0px)) !important;
-            }
-        }
-
-        .promo-text-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            gap: 2px;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
-        }
-
-        .promo-line {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            text-align: center;
-            line-height: 1.15;
-            letter-spacing: 0.5px;
-        }
-
-        .promo-line.line-top {
-            color: #ffffff;
-            font-size: clamp(16px, 5vw, 22px);
-        }
-
-        .promo-line.line-bottom {
-            color: #FF2E4C;
-            font-size: clamp(18px, 5.5vw, 24px);
-        }
-
-        /* Red Livestream Themed Call-To-Action Button */
-        .btn-subscribe {
-            font-family: 'Montserrat', sans-serif;
-            width: 100%;
-            max-width: 340px;
-            height: 52px;
-            border-radius: 14px;
-            text-decoration: none;
-            font-weight: 900;
-            font-size: clamp(15px, 4.2vw, 18px); 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            color: #ffffff;
-            background: linear-gradient(135deg, #FF0000 0%, #B30000 100%);
-            border: none;
-            box-shadow: 0 4px 20px rgba(255, 0, 0, 0.5);
-            transition: transform 0.15s ease, background-color 0.15s ease;
-            animation: live-pulse 1.8s infinite;
-        }
-
-        .btn-subscribe:active {
-            transform: scale(0.97);
-        }
-
-        /* Animated Video Play Icon Inside Button */
-        .live-icon {
-            width: 24px;
-            height: 24px;
-            fill: currentColor;
-            flex-shrink: 0;
-            animation: live-shake 2.5s infinite ease-in-out;
-        }
-
-        @keyframes live-pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 16px rgba(255, 0, 0, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
-            }
-        }
-
-        @keyframes live-shake {
-            0%, 100% { transform: scale(1); }
-            10%, 20% { transform: scale(1.15); }
-            15%, 25% { transform: scale(1.15); }
-            30% { transform: scale(1); }
-        }
-
-        video {
-            background-color: transparent;
-        }
-    </style>
+</style>
 </head>
-<body data-page="ads" data-next="index.html" data-prev="index.html">
+<body>
 
-    <div class="app-container">
-
-        <!-- Top Left Brand Overlay Logo -->
-        <img src="logo.png" alt="Gerbon Movies Logo" class="top-left-logo">
-
-        <video id="stream-video" class="video-layer" playsinline autoplay loop></video>
-
-        <div class="bottom-action-bar">
-            
-            <div class="promo-text-wrapper">
-                <div class="promo-line line-top">STREAMING LIVE</div>
-                <div class="promo-line line-bottom">WATCH ME LIVE NOW</div>
-            </div>
-
-            <a href="https://araplhn.org/4/f4da12d7aaa67cd61f6a1196381da654" target="_blank" rel="noopener noreferrer" class="btn-subscribe">
-                <svg class="live-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-                </svg>
-                WATCH NOW
-            </a>
-
-        </div>
+<main class="card" id="gate" role="dialog" aria-labelledby="ttl">
+  <!-- Static unlock card -->
+  <section id="offer">
+    <div class="title-group">
+      <div class="title-line-1">Unlock full access</div>
+      <div class="title-line-2">You will be redirected back to <span class="highlight">gerbonmovies.site</span> when you finish watching the Ad</div>
     </div>
+    <a class="option" id="viewAd" href="https://shrinkme.click/gerbonmovies">
+      <span>
+        <div class="t">Watch a short ad</div>
+        <div class="d">Watch ad to unlock 24 hours</div>
+      </span>
+      <span class="play" aria-hidden="true"><svg viewBox="0 0 10 10"><path d="M0 0l10 5-10 5z"/></svg></span>
+    </a>
+    <div class="perks"><span><b>24h</b> full access</span><span><b>1</b> short ad</span><span><b>Free</b></span></div>
+  </section>
 
+</main>
 
-    <script type="module">
-        import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<script>
+(function(){
+  var ACCESS_HOURS = 24;             // how long access lasts
+  var STORAGE_KEY = 'unlock_expiry'; // read this key on index.html
+  var SHRINKME_URL = 'https://shrinkme.click/gerbonmovies';
 
-        // 1. FIREBASE CONFIGURATION
-        const firebaseConfig = {
-          apiKey: "AIzaSyALnYVISQIb6jNBU9Sds00GLQNhGQ3y4wk",
-          authDomain: "intense-augury-28gvj.firebaseapp.com",
-          projectId: "intense-augury-28gvj",
-          storageBucket: "intense-augury-28gvj.firebasestorage.app",
-          messagingSenderId: "847124482953",
-          appId: "1:847124482953:web:35d42c09894f05891a2f58"
-        };
+  var $ = function(id){return document.getElementById(id)};
 
-        const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-        const DATABASE_ID = "ai-studio-shortxxadmindash-86192a98-919e-436c-80b9-836d96e0e32b";
-        const db = getFirestore(app, DATABASE_ID);
+  function hasAccess(){
+    try{ return Number(localStorage.getItem(STORAGE_KEY)) > Date.now(); }
+    catch(e){ return false; }
+  }
+  function grant(){
+    try{ localStorage.setItem(STORAGE_KEY, String(Date.now() + ACCESS_HOURS*3600*1000)); }catch(e){}
+  }
 
-        const baseVideo = document.getElementById('stream-video') || document.querySelector('video');
+  // Already unlocked? send them to the main site, not the ad gate.
+  if(hasAccess()){ location.replace('index.html'); return; }
 
-        // 2. FETCH SINGLE VIDEO FROM VIDEOS COLLECTION & PLAY WITH AUDIO
-        async function loadVideosFromFirestore() {
-            try {
-                const videosRef = collection(db, "videos");
-                const q = query(videosRef, where("is_active", "==", true));
-                const querySnapshot = await getDocs(q);
+  // Block the back button: every time they try to pop back, push forward again.
+  history.pushState(null, null, location.href);
+  window.addEventListener('popstate', function(){
+    history.pushState(null, null, location.href);
+  });
 
-                let rawVideos = [];
-                querySnapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    if (data.direct_url) {
-                        rawVideos.push({
-                            id: docSnap.id,
-                            url: data.hls_url || data.direct_url
-                        });
-                    }
-                });
-
-                if (rawVideos.length === 0) {
-                    console.warn("No active videos found in Firestore.");
-                    return;
-                }
-
-                // Pick one random video from the active database records
-                const selectedVideo = rawVideos[Math.floor(Math.random() * rawVideos.length)];
-                
-                // Set continuous video looping
-                baseVideo.loop = true;
-                baseVideo.src = selectedVideo.url;
-
-                // Increment view counter in Firestore
-                trackVideoView(selectedVideo.id);
-
-                // Play video unmuted with muted fallback for browser autoplay rules
-                baseVideo.muted = false;
-                baseVideo.play().catch(() => {
-                    baseVideo.muted = true;
-                    baseVideo.play().catch(() => {});
-                });
-
-            } catch (error) {
-                console.error("Error fetching videos from Firestore:", error);
-            }
-        }
-
-        // 3. INCREMENT VIEW COUNT IN VIDEOS COLLECTION
-        async function trackVideoView(videoId) {
-            try {
-                await updateDoc(doc(db, "videos", videoId), {
-                    views: increment(1)
-                });
-            } catch (error) {
-                console.error("Error updating video view count:", error);
-            }
-        }
-
-        // 4. AUDIO UNLOCK FALLBACK HANDLER
-        const unlockAudio = () => {
-            if (baseVideo) baseVideo.muted = false;
-        };
-
-        ['click', 'touchstart', 'keydown'].forEach(evt => {
-            document.addEventListener(evt, unlockAudio, { once: true });
-        });
-
-        // Enforce Playback logic
-        const enforceVideoPlayback = () => {
-            if (baseVideo && baseVideo.paused && baseVideo.src) {
-                baseVideo.play().catch(() => {});
-            }
-        };
-
-        setInterval(enforceVideoPlayback, 300);
-        window.addEventListener('focus', enforceVideoPlayback);
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) enforceVideoPlayback();
-        });
-
-        // Scroll/swipe to skip ad - redirects to index.html
-        let startY = 0;
-        window.addEventListener('touchstart', (e) => {
-            startY = e.touches[0].clientY;
-        }, { passive: true });
-
-        window.addEventListener('touchend', (e) => {
-            let endY = e.changedTouches[0].clientY;
-            // Swipe up or down to skip ad
-            if (Math.abs(startY - endY) > 50) {
-                window.location.href = document.body.dataset.next || 'index.html';
-            }
-        }, { passive: true });
-
-        window.addEventListener('wheel', (e) => {
-            if (Math.abs(e.deltaY) > 30) {
-                window.location.href = document.body.dataset.next || 'index.html';
-            }
-        }, { passive: true });
-
-        // Keyboard arrow keys to skip
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'PageDown' || e.key === 'PageUp') {
-                e.preventDefault();
-                window.location.href = document.body.dataset.next || 'index.html';
-            }
-        });
-
-        // EXECUTION
-        loadVideosFromFirestore();
-    </script>
-
-    <!-- Adsterra New Tab Override Protection -->
-    <script>
-    (function() {
-      const originalOpen = window.open;
-      window.open = function(url, name, specs) {
-        return originalOpen.call(window, url, '_blank', specs);
-      };
-
-      let currentHref = window.location.href;
-      try {
-        Object.defineProperty(window, 'onbeforeunload', {
-          configurable: true,
-          get: function() { return null; },
-          set: function(fn) {}
-        });
-      } catch (e) {}
-
-      const handleNavigationAttempt = function(targetUrl) {
-        if (targetUrl && targetUrl !== currentHref && !targetUrl.startsWith(window.location.origin)) {
-          window.open(targetUrl, '_blank');
-          return true;
-        }
-        return false;
-      };
-
-      try {
-        const locationDescriptor = Object.getOwnPropertyDescriptor(window, 'location');
-        if (locationDescriptor && locationDescriptor.configurable) {
-          let realLocation = window.location;
-          Object.defineProperty(window, 'location', {
-            get: function() { return realLocation; },
-            set: function(val) {
-              if (!handleNavigationAttempt(val)) realLocation.href = val;
-            }
-          });
-        }
-      } catch (e) {}
-    })();
-    </script>
-
-    <!-- Adsterra Social Bar Script -->
-    <script data-cfasync="false" src="https://biomanos.org/14/e83c3df1d025804eca4fb0e8e81cf573"></script>
-
+  // Clicking opens the ad in the SAME tab (no new tab) and replaces this page
+  // in history so the back button cannot return to ads.html.
+  $('viewAd').addEventListener('click', function(e){
+    e.preventDefault();
+    grant();
+    location.replace(SHRINKME_URL);
+  });
+})();
+</script>
 </body>
-
 </html>
-

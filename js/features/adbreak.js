@@ -12,7 +12,7 @@
  * SMARTLINK_URL is the Live Cams / Adsterra Smartlink.
  */
 
-const SMARTLINK_URL = "https://araplhn.org/4/f4da12d7aaa67cd61f6a1196381da654";
+const SMARTLINK_URL = "https://go.whitetrafsa.com?userId=dd571e000ae6f07ef31fa3fb50db3d7353ab3ba1c6c501e61a894d69b80e96ae"; // Stripcash Promo URL
 
 const SCROLL_COUNT_KEY = "scrollCount";
 const TARGET_SCROLLS_KEY = "targetScrolls";
