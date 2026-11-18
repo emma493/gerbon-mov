@@ -445,10 +445,6 @@
         return "";
       }
 
-      function generateThreshold(){
-        return 0.50 + Math.random() * 0.40; // 0.50 to 0.90
-      }
-
       function hideDownloadButton(){
         root.style.display = "none";
         buttonShown = false;
@@ -459,9 +455,7 @@
         if(buttonShown) return;
         buttonShown = true;
         root.style.display = "";
-        // hop into a fresh random spot beside the rail
-        const p = pick();
-        if(p) moveTo(p.x, p.y, false);
+        // Button is already positioned at top of Like icon
       }
 
       function checkProgress(){
@@ -479,8 +473,8 @@
       // On new video: hide button, wait for new random threshold
       function onVideoChanged(){
         try{
-          // generate new threshold for the upcoming video
-          videoThreshold = generateThreshold();
+          // generate new threshold for the upcoming video (50% - 70%)
+          videoThreshold = 0.50 + Math.random() * 0.20;
           buttonShown = false;
           root.style.display = "none";
         }catch(e){}
@@ -489,7 +483,7 @@
       if(video){
         video.addEventListener("timeupdate", checkProgress, {passive:true});
         video.addEventListener("loadedmetadata", ()=>{
-          if(!videoThreshold) videoThreshold = generateThreshold();
+          if(!videoThreshold) videoThreshold = 0.50 + Math.random() * 0.20;
           checkProgress();
         }, {passive:true});
         // On loop/replay: keep button visible (do nothing)
@@ -520,70 +514,34 @@
         try { localStorage.setItem("shortxx_pwa_installed", "1"); } catch (err) {}
       });
 
-      // Random positioning beside the right rail — locked between Like and Install icons
-      const S = 40, GAP = 8, BAND = 60;
-      let lastPos = null;     // one position per video, stays fixed
+      // Permanent position: top of Like icon, inline with side icons
+      const S = 40, GAP = 8;
       let pressed = false;
 
-      function pick(){
+      function setLikePosition(){
         const likeBtn = document.querySelector('.like-btn') || document.querySelector('[aria-label="Like"]');
-        const rail    = document.getElementById("sx-rail-install");
-
-        // Y bounds: between Like button (top) and Install icon (bottom)
-        let yMin, yMax;
+        let x, y;
         if(likeBtn){
           const lr = likeBtn.getBoundingClientRect();
-          yMin = Math.max(0, lr.top);
+          // Position directly above the Like icon, same X alignment
+          x = lr.left + (lr.width - S) / 2;
+          y = Math.max(0, lr.top - S - GAP);
         } else {
-          yMin = Math.max(0, innerHeight * 0.40);
+          // Fallback: top-right area
+          x = innerWidth - S - 20;
+          y = 60;
         }
-        if(rail){
-          const rr = rail.getBoundingClientRect();
-          yMax = Math.min(innerHeight - S - 10, rr.bottom - 6);
-        } else {
-          yMax = Math.min(innerHeight - S - 10, innerHeight - 10);
-        }
-        if(yMax < yMin) yMax = yMin + S;
-
-        // X bounds: tight to the left of the rail icons
-        let xMin, xMax;
-        if(rail){
-          const rr = rail.getBoundingClientRect();
-          xMax = Math.max(8, rr.left - GAP - S);
-          xMin = Math.max(8, xMax - BAND);
-        } else {
-          xMax = innerWidth - S - 10;
-          xMin = Math.max(8, xMax - BAND);
-        }
-
-        if(xMax < xMin) return null;
-
-        // Try up to 8 times to find a spot far enough from lastPos
-        for(let i = 0; i < 8; i++){
-          const x = xMin + Math.random() * (xMax - xMin);
-          const y = yMin + Math.random() * (yMax - yMin);
-          if(!lastPos || Math.hypot(x - lastPos.x, y - lastPos.y) > 40){
-            lastPos = { x, y };
-            return lastPos;
-          }
-        }
-        return lastPos;
+        moveTo(x, y, false);
       }
 
-      function placeButton(){
-        const p = pick();
-        if(p) moveTo(p.x, p.y, false);
-      }
+      // Set position once after DOM is painted
+      setTimeout(setLikePosition, 500);
 
-      // Initial position after a short delay so the rail is painted
-      setTimeout(placeButton, 500);
-
-      // Re-pick position on every new video
+      // Re-set position on every new video (keeps same permanent spot)
       window.addEventListener("sx:video-changed", ()=>{
-        lastPos = null;
         buttonShown = false;
         root.style.display = "none";
-        placeButton();
+        setLikePosition();
       }, {passive:true});
 
       root.addEventListener('pointerdown', () => (pressed = true));
