@@ -20,7 +20,7 @@ const RETURN_FLAG_KEY = "shortxx_adbreak_return";
 const UNLOCK_EXPIRY_KEY = "unlock_expiry";
 
 function getRandomAdScrollTarget() {
-  return Math.floor(Math.random() * 3) + 3; // 3, 4, or 5
+  return Math.floor(Math.random() * 6) + 10; // 10 to 15
 }
 
 function getCount() {
