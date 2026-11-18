@@ -520,58 +520,77 @@
         try { localStorage.setItem("shortxx_pwa_installed", "1"); } catch (err) {}
       });
 
-      // Random positioning beside the right rail — bottom right zone
-      const S = 40, GAP = 10, BAND = 70;
-      let last = { x: 0, y: 0 }, pressed = false;
-      let timer = null;
+      // Random positioning beside the right rail — locked between Like and Install icons
+      const S = 40, GAP = 8, BAND = 60;
+      let lastPos = null;     // one position per video, stays fixed
+      let pressed = false;
 
       function pick(){
-        const rail = document.getElementById("sx-rail-install");
-        let r = null;
-        if(rail) r = rail.getBoundingClientRect();
+        const likeBtn = document.querySelector('.like-btn') || document.querySelector('[aria-label="Like"]');
+        const rail    = document.getElementById("sx-rail-install");
 
-        // Bottom-right zone: clamp Y to the lower 45% of the viewport
-        const yMin = Math.max(0, innerHeight * 0.55 - S);
-        const yMax = Math.min(innerHeight - S - 10, innerHeight - 10);
-        let xMin, xMax;
-
+        // Y bounds: between Like button (top) and Install icon (bottom)
+        let yMin, yMax;
+        if(likeBtn){
+          const lr = likeBtn.getBoundingClientRect();
+          yMin = Math.max(0, lr.top);
+        } else {
+          yMin = Math.max(0, innerHeight * 0.40);
+        }
         if(rail){
-          // Place to the left of the rail icon, near the right edge
-          xMax = Math.max(8, r.left - GAP - S);
+          const rr = rail.getBoundingClientRect();
+          yMax = Math.min(innerHeight - S - 10, rr.bottom - 6);
+        } else {
+          yMax = Math.min(innerHeight - S - 10, innerHeight - 10);
+        }
+        if(yMax < yMin) yMax = yMin + S;
+
+        // X bounds: tight to the left of the rail icons
+        let xMin, xMax;
+        if(rail){
+          const rr = rail.getBoundingClientRect();
+          xMax = Math.max(8, rr.left - GAP - S);
           xMin = Math.max(8, xMax - BAND);
         } else {
-          // Fallback: bottom-right corner of the screen
           xMax = innerWidth - S - 10;
           xMin = Math.max(8, xMax - BAND);
         }
 
-        if(xMax < xMin || yMax < yMin) return null;
+        if(xMax < xMin) return null;
+
+        // Try up to 8 times to find a spot far enough from lastPos
         for(let i = 0; i < 8; i++){
           const x = xMin + Math.random() * (xMax - xMin);
           const y = yMin + Math.random() * (yMax - yMin);
-          if(Math.hypot(x - last.x, y - last.y) > 90) return (last = { x, y });
+          if(!lastPos || Math.hypot(x - lastPos.x, y - lastPos.y) > 40){
+            lastPos = { x, y };
+            return lastPos;
+          }
         }
-        return last;
+        return lastPos;
       }
+
+      function placeButton(){
+        const p = pick();
+        if(p) moveTo(p.x, p.y, false);
+      }
+
+      // Initial position after a short delay so the rail is painted
+      setTimeout(placeButton, 500);
+
+      // Re-pick position on every new video
+      window.addEventListener("sx:video-changed", ()=>{
+        lastPos = null;
+        buttonShown = false;
+        root.style.display = "none";
+        placeButton();
+      }, {passive:true});
 
       root.addEventListener('pointerdown', () => (pressed = true));
       addEventListener('pointerup', () => (pressed = false));
 
-      function hopIfIdle(){
-        if(!document.hidden && !pressed){
-          const p = pick();
-          if(p) moveTo(p.x, p.y);
-        }
-      }
-
-      // Initial position after a short delay so the rail is painted
-      setTimeout(()=>{ const p = pick(); if(p) moveTo(p.x, p.y, false); }, 500);
-
-      // Re-pick every 7 seconds
-      timer = setInterval(() => { hopIfIdle(); }, 7000);
-
-      // Recompute on resize
-      addEventListener('resize', () => { if(timer) clearInterval(timer); timer = setInterval(() => { hopIfIdle(); }, 7000); });
+      // No interval hopping — position stays fixed during video playback
+      // Button only moves via its built-in float/sway animation
 
       // Public API
       window.GerbonDownload = { el: root, moveTo, hop: doHop, setSize, onClick: null };
