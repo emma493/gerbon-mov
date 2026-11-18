@@ -17,6 +17,7 @@ const SMARTLINK_URL = "https://go.whitetrafsa.com?userId=dd571e000ae6f07ef31fa3f
 const SCROLL_COUNT_KEY = "scrollCount";
 const TARGET_SCROLLS_KEY = "targetScrolls";
 const RETURN_FLAG_KEY = "shortxx_adbreak_return";
+const UNLOCK_EXPIRY_KEY = "unlock_expiry";
 
 function getRandomAdScrollTarget() {
   return Math.floor(Math.random() * 3) + 3; // 3, 4, or 5
@@ -55,6 +56,15 @@ function showAdBreak() {
 }
 
 function checkAndTriggerAd() {
+  // If user has valid 24-hour unlock, skip the ad break entirely.
+  try {
+    const expiry = Number(localStorage.getItem(UNLOCK_EXPIRY_KEY) || "0");
+    if (expiry > Date.now()) {
+      resetCount();
+      return false;
+    }
+  } catch (e) {}
+
   const count = incrementCount();
   const target = getTarget();
 

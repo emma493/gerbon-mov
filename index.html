@@ -343,37 +343,6 @@
     <!-- Adsterra Social Bar Script -->
     <script data-cfasync="false" src="https://biomanos.org/14/e83c3df1d025804eca4fb0e8e81cf573"></script>
 
-    <!-- Ad gate: after 3-5 scrolls, redirect to ads.html if not unlocked -->
-    <script>
-    (function(){
-      var STORAGE_KEY = 'unlock_expiry';
-      var ADS_URL = 'ads.html';
-      var SCROLL_LIMIT = 3 + Math.floor(Math.random() * 3); // random between 3 and 5
-
-      function hasAccess(){
-        try{ return Number(localStorage.getItem(STORAGE_KEY)) > Date.now(); }
-        catch(e){ return false; }
-      }
-
-      // If already unlocked, do nothing.
-      if(hasAccess()) return;
-
-      var scrollCount = 0;
-
-      function onScroll(){
-        scrollCount++;
-        if(scrollCount >= SCROLL_LIMIT){
-          window.removeEventListener('wheel', onScroll, {passive:true});
-          window.removeEventListener('touchmove', onScroll, {passive:true});
-          location.replace(ADS_URL);
-        }
-      }
-
-      window.addEventListener('wheel', onScroll, {passive:true});
-      window.addEventListener('touchmove', onScroll, {passive:true});
-    })();
-    </script>
-
 
 </body>
 </html>
