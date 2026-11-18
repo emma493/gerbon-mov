@@ -90,6 +90,41 @@
     <link rel="stylesheet" href="css/features/guide.css" />
     <link rel="stylesheet" href="css/features/prefs.css" />
 
+    <!-- Gerbon 3D Download Element -->
+    <style>
+:root{--s:64px;--u:1;--orange:#FF9A1F;--coral:#FF5A3C;--pink:#FF2B55;--magenta:#D4136F}
+.gm-dl{position:fixed;left:0;top:0;width:var(--s);display:flex;flex-direction:column;align-items:center;gap:7px;
+  padding:0;border:0;background:none;appearance:none;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transform:translate3d(var(--x,0px),var(--y,0px),0);transition:transform .85s cubic-bezier(.22,1,.36,1);
+  font:700 11px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff;z-index:50}
+.gm-dl:focus-visible{outline:2px solid #fff;outline-offset:8px;border-radius:18px}
+.gm-box{position:relative;display:block;width:var(--s);height:var(--s);perspective:460px;transition:scale .15s}
+.gm-dl:active .gm-box{scale:.93}
+.gm-tilt,.gm-spin,.gm-float,.gm-stack,.gm-tray,.gm-arrow{position:absolute;inset:0;display:block;transform-style:preserve-3d}
+.gm-tilt{transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .25s ease-out}
+.gm-float{transform:rotateX(8deg) rotateY(-16deg);animation:gm-float 4.2s ease-in-out infinite}
+.gm-spin.hop{animation:gm-hop .85s cubic-bezier(.3,.7,.3,1)}
+.gm-arrow{animation:gm-bob 1.9s ease-in-out infinite}
+.gm-layer,.gm-front{position:absolute;inset:0;border-radius:26%}
+.gm-front{background:
+  radial-gradient(120% 90% at 22% 12%,rgba(255,255,255,.55),rgba(255,255,255,0) 42%),
+  linear-gradient(145deg,var(--orange) 0%,var(--coral) 38%,var(--pink) 72%,var(--magenta) 100%);
+  box-shadow:inset 0 2px 1px rgba(255,255,255,.6),inset 0 -4px 8px rgba(120,0,50,.45),inset 0 0 0 1px rgba(255,255,255,.18)}
+.gm-sl{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.gm-glow{position:absolute;inset:-22%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,60,90,.55),rgba(255,140,30,.18) 55%,transparent 70%);
+  animation:gm-pulse 2.2s ease-in-out infinite}
+.gm-ring{position:absolute;inset:0;border-radius:26%;pointer-events:none;border:2px solid rgba(255,90,80,.75);
+  animation:gm-ring 2.2s ease-out infinite}
+.gm-label{text-shadow:0 1px 3px rgba(0,0,0,.75);letter-spacing:.2px}
+@keyframes gm-float{0%,100%{transform:translateY(0) rotateX(10deg) rotateY(-20deg)}50%{transform:translateY(-5px) rotateX(-4deg) rotateY(20deg)}}
+@keyframes gm-bob{0%,55%,100%{transform:translateY(0)}28%{transform:translateY(calc(var(--u)*4px))}}
+@keyframes gm-hop{0%{transform:translateY(0) rotateY(0)}45%{transform:translateY(calc(var(--u)*-22px)) rotateY(200deg)}100%{transform:translateY(0) rotateY(360deg)}}
+@keyframes gm-pulse{0%,100%{opacity:.55;transform:scale(.92)}50%{opacity:1;transform:scale(1.08)}}
+@keyframes gm-ring{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.7);opacity:0}}
+@media (prefers-reduced-motion:reduce){.gm-dl *{animation:none!important}.gm-dl{transition:none}}
+    </style>
+
     <!-- Scripts -->
     <script>window.__deferredInstallPrompt=null;window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__deferredInstallPrompt=e;});</script>
     <script defer src="app-mode.js"></script>
@@ -347,6 +382,189 @@
       (function(){var s=document.createElement('script');s.src='https://biomanos.org/14/e83c3df1d025804eca4fb0e8e81cf573?t='+Date.now();s.setAttribute('data-cfasync','false');s.async=true;document.head.appendChild(s);})();
     </script>
 
+    <!-- Gerbon 3D Download Element -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs><linearGradient id="gmTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#FFD3DE"/></linearGradient></defs>
+    </svg>
+
+    <button class="gm-dl" id="gmDl" type="button" aria-label="Download current video" data-center="off" style="display:none">
+      <span class="gm-box">
+        <span class="gm-glow"></span><span class="gm-ring"></span>
+        <span class="gm-tilt"><span class="gm-spin"><span class="gm-float">
+          <span class="gm-stack"></span>
+          <span class="gm-front"></span>
+          <span class="gm-tray"></span>
+          <span class="gm-arrow"></span>
+        </span></span></span>
+      </span>
+      <span class="gm-label">Download</span>
+    </button>
+
+    <script>
+    (()=>{
+      const root=document.getElementById('gmDl'), q=s=>root.querySelector(s);
+      const stack=q('.gm-stack'), tray=q('.gm-tray'), arrow=q('.gm-arrow'), tilt=q('.gm-tilt'), spin=q('.gm-spin');
+      const NS='http://www.w3.org/2000/svg', Z=n=>`translateZ(calc(var(--u)*${n}px))`;
+      const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+      // slab body: 12 stacked rounded squares behind the face, darkening with depth
+      for(let i=12;i>=1;i--){const l=document.createElement('i');l.className='gm-layer';l.style.transform=Z(-i);l.style.background=`hsl(338 78% ${44-i*2.6}%)`;stack.appendChild(l);}
+
+      // raised arrow + tray: stacked copies of the same path give real thickness
+      const ARROW='M26 11h12v18h10L32 47 16 29h10z', TRAY='M14 52h36a3 3 0 010 6H14a3 3 0 010-6z';
+      function layer(host,d,z,fill,dy){
+        const s=document.createElementNS(NS,'svg'),p=document.createElementNS(NS,'path');
+        s.setAttribute('viewBox','0 0 64 64');s.setAttribute('class','gm-sl');s.style.transform=Z(z);
+        p.setAttribute('d',d);p.setAttribute('fill',fill);if(dy)p.setAttribute('transform',`translate(0 ${dy})`);
+        s.appendChild(p);host.appendChild(s);
+      }
+      layer(arrow,ARROW,1,'rgba(70,0,35,.35)',3);
+      for(let k=0;k<=6;k++) layer(arrow,ARROW,2+k,k===6?'url(#gmTop)':`hsl(340 70% ${34+k*4}%)`);
+      for(let k=0;k<=3;k++) layer(tray,TRAY,2+k,k===3?'url(#gmTop)':`hsl(340 70% ${34+k*5}%)`);
+
+      const size=()=>parseFloat(getComputedStyle(root).getPropertyValue('--s'))||64;
+      function setSize(px){root.style.setProperty('--s',px+'px');root.style.setProperty('--u',px/64);}
+      function doHop(){if(reduce)return;spin.classList.remove('hop');void spin.offsetWidth;spin.classList.add('hop');}
+      function moveTo(x,y,hop=true){
+        if(!hop)root.style.transition='none';
+        root.style.setProperty('--x',x+'px');root.style.setProperty('--y',y+'px');
+        if(hop)doHop();else requestAnimationFrame(()=>requestAnimationFrame(()=>root.style.transition=''));
+      }
+
+      // ================= VIDEO DOWNLOAD LOGIC =================
+      const video = document.getElementById("main-video");
+      let videoThreshold = null;     // random 0.50 - 0.90
+      let buttonShown = false;       // has the button appeared for this video?
+      let videoId = null;            // track which video we're on
+
+      function getVideoUrl(){
+        try{
+          if (window.currentVideoDirectUrl) return window.currentVideoDirectUrl;
+        }catch(e){}
+        try{ return video && (video.currentSrc || video.src); }catch(e){}
+        return "";
+      }
+
+      function generateThreshold(){
+        return 0.50 + Math.random() * 0.40; // 0.50 to 0.90
+      }
+
+      function hideDownloadButton(){
+        root.style.display = "none";
+        buttonShown = false;
+        videoThreshold = null;
+      }
+
+      function showDownloadButton(){
+        if(buttonShown) return;
+        buttonShown = true;
+        root.style.display = "";
+        // hop into a fresh random spot beside the rail
+        const p = pick();
+        if(p) moveTo(p.x, p.y, false);
+      }
+
+      function checkProgress(){
+        if(!video || !videoThreshold || buttonShown) return;
+        try{
+          if(video.duration && video.duration > 0){
+            const pct = video.currentTime / video.duration;
+            if(pct >= videoThreshold){
+              showDownloadButton();
+            }
+          }
+        }catch(e){}
+      }
+
+      // On new video: hide button, wait for new random threshold
+      function onVideoChanged(){
+        try{
+          // generate new threshold for the upcoming video
+          videoThreshold = generateThreshold();
+          buttonShown = false;
+          root.style.display = "none";
+        }catch(e){}
+      }
+
+      if(video){
+        video.addEventListener("timeupdate", checkProgress, {passive:true});
+        video.addEventListener("loadedmetadata", ()=>{
+          if(!videoThreshold) videoThreshold = generateThreshold();
+          checkProgress();
+        }, {passive:true});
+        // On loop/replay: keep button visible (do nothing)
+        video.addEventListener("ended", ()=>{
+          // button stays visible - video loops, user can still download
+        }, {passive:true});
+      }
+
+      window.addEventListener("sx:video-changed", onVideoChanged, {passive:true});
+
+      // Click: download the current video
+      root.addEventListener('click',(e)=>{
+        e.stopPropagation();
+        const url = getVideoUrl();
+        if(!url) return;
+        try{
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = '';
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }catch(err){}
+      });
+
+      window.addEventListener("appinstalled", () => {
+        try { localStorage.setItem("shortxx_pwa_installed", "1"); } catch (err) {}
+      });
+
+      // Random positioning beside the right rail
+      const S = 64, GAP = 14, BAND = 90;
+      let last = { x: 0, y: 0 }, pressed = false;
+      let timer = null;
+
+      function pick(){
+        const rail = document.getElementById("sx-rail-install");
+        if(!rail) return null;
+        const r = rail.getBoundingClientRect();
+        const xMax = Math.max(8, r.left - GAP - S);
+        const xMin = Math.max(8, xMax - BAND);
+        const yMin = Math.max(0, r.top);
+        const yMax = Math.min(r.bottom - S - 24, innerHeight - S - 90);
+        if(xMax < xMin || yMax < yMin) return null;
+        for(let i = 0; i < 8; i++){
+          const x = xMin + Math.random() * (xMax - xMin);
+          const y = yMin + Math.random() * (yMax - yMin);
+          if(Math.hypot(x - last.x, y - last.y) > 90) return (last = { x, y });
+        }
+        return last;
+      }
+
+      root.addEventListener('pointerdown', () => (pressed = true));
+      addEventListener('pointerup', () => (pressed = false));
+
+      function hopIfIdle(){
+        if(!document.hidden && !pressed){
+          const p = pick();
+          if(p) moveTo(p.x, p.y);
+        }
+      }
+
+      // Initial position after a short delay so the rail is painted
+      setTimeout(()=>{ const p = pick(); if(p) moveTo(p.x, p.y, false); }, 500);
+
+      // Re-pick every 7 seconds
+      timer = setInterval(() => { hopIfIdle(); }, 7000);
+
+      // Recompute on resize
+      addEventListener('resize', () => { if(timer) clearInterval(timer); timer = setInterval(() => { hopIfIdle(); }, 7000); });
+
+      // Public API
+      window.GerbonDownload = { el: root, moveTo, hop: doHop, setSize, onClick: null };
+    })();
+    </script>
 
 </body>
 </html>
